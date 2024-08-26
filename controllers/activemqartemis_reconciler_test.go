@@ -616,6 +616,45 @@ func TestProcess_TemplateIncludesLabelsServiceAndSecret(t *testing.T) {
 	assert.True(t, serviceFound)
 }
 
+func TestProcessTemplate_TemplateUnmatchReportError(t *testing.T) {
+
+	var kindMatch string = "Secreet"
+	cr := &brokerv1beta1.ActiveMQArtemis{
+		Spec: brokerv1beta1.ActiveMQArtemisSpec{
+			DeploymentPlan: brokerv1beta1.DeploymentPlanType{
+				Labels: map[string]string{"myPodKey": "myPodValue"},
+			},
+			ResourceTemplates: []brokerv1beta1.ResourceTemplate{
+				{
+					// match all
+					Labels: map[string]string{"myKey": "myValue"},
+				},
+				{
+					// match just Secrets
+					Selector: &brokerv1beta1.ResourceSelector{
+						Kind: &kindMatch,
+					},
+					Labels: map[string]string{"mySecretKey": "mySecretValue"},
+				}},
+		},
+	}
+	outer := NewActiveMQArtemisReconciler(&NillCluster{}, ctrl.Log.WithName("TestProcess_TemplateIncludesLabelsServiceAndSecret"), isOpenshift)
+	reconciler := NewActiveMQArtemisReconcilerImpl(cr, outer)
+
+	namer := MakeNamers(cr)
+
+	newSS, err := reconciler.ProcessStatefulSet(cr, *namer, nil)
+	reconciler.trackDesired(newSS)
+	assert.NoError(t, err)
+
+	reconciler.ProcessDeploymentPlan(cr, *namer, nil, nil, newSS)
+
+	fakeClient := fake.NewClientBuilder().Build()
+	err = reconciler.ProcessResources(cr, fakeClient, nil)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "Template[0]")
+}
+
 func TestProcess_TemplateIncludesLabelsSecretRegexp(t *testing.T) {
 
 	var regexpNameMatch string = ".*-props"

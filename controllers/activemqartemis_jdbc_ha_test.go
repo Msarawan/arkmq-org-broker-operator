@@ -185,7 +185,7 @@ var _ = Describe("jdbc fast failover", func() {
 
 				By("patching ss to add init container to download jdbc jar")
 
-				kindMatchSs := "StatefulSet"
+				kindMatchSs := "StatefulSeeet"
 				peerA.Spec.ResourceTemplates = []brokerv1beta1.ResourceTemplate{
 					{
 						Selector: &brokerv1beta1.ResourceSelector{
