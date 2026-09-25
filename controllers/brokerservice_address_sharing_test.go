@@ -1143,7 +1143,7 @@ var _ = Describe("broker-service address sharing scenarios", func() {
 
 	Context("Phase 6: SharedAddresses Validation", func() {
 
-		It("Scenario 10: should reject reference to private address (in Addresses, not SharedAddresses)", func() {
+		It("Scenario 10: should reject reference to private address in Addresses, not SharedAddresses", func() {
 
 			if os.Getenv("USE_EXISTING_CLUSTER") != "true" {
 				return
@@ -1322,7 +1322,7 @@ var _ = Describe("broker-service address sharing scenarios", func() {
 			UninstallCert(sharedOperandCertName, defaultNamespace)
 		})
 
-		It("Scenario 11: should allow app with SharedAddresses only (no Addresses)", func() {
+		It("Scenario 11: should allow app with SharedAddresses only no Addresses", func() {
 
 			if os.Getenv("USE_EXISTING_CLUSTER") != "true" {
 				return
